@@ -1,0 +1,66 @@
+t=0:0.01:6.5;
+R1=1; R2=2; R3=3; R4=4; R5=5; R6=6; R7=7;R8=8;
+
+E1=7*ones(size(t)); E2=sin(4*t); E3=lab3_demo_fun(t);
+
+R=[R1+R2+R3 -R2 0;
+   -R2 R4+R5+R2 -R5;
+    0 -R5 R5+R6+R7];
+E = [E1; -E2; -E3];
+% atradīsim kontūrstrāva
+Ik =R\E
+% artasiisim IR2-?
+IR2= Ik(1)-Ik(2)
+% atradiisim UR2-?
+UR2 = IR2*R2
+% atradīsim PR2-?
+PR2 = UR2*IR2
+%% cits gadījums
+% tagad katram avotam būs 3 spriegumi
+E1=[1 -1 0];
+E2=[2 -2 0];
+E3=[3 -3 0];
+% pārdefinēsim vienādojuma labo pusi
+E = [E1; -E2; -E3];
+% risinājsim vienādojumu
+Ik = R\E
+% atradīsim IR3-?
+IR3 = Ik(1,:)
+% atradīsim UR3-?
+UR3 = IR3*R3
+% atradīsim PR3-?
+PR3 = UR3.*IR3
+%% laika mainīgie signāli
+t = 0:0.01:1;
+E1t = 2*sin(2*pi*4*t);
+E2t = 3*cos(2*pi*5*t);
+E3t = 10+zeros(size(t));
+% pārdefinēsim vienādopjuma labo pusi
+E = [E1t;-E2t;-E3t];
+% risināsim 101 vienādojumu sistēmu
+Ik = R\E;
+IR5=Ik(3,:)-Ik(2,:);
+% atradīsim un uzzīmēsim UR5 un PR5
+UR5 = IR5*R5;
+PR5 = UR5.*IR5;
+
+% uzzīmēssim grafikuy
+plot(t,UR5,t,PR5)
+legend('U_R_5(t)','jauda P_R_5(t)')
+xlabel('t,s')
+yyaxis left
+plot(t,UR5)
+xlabel('t,s'); ylabel('UR5,V')
+yyaxis right
+plot(t,PR5)
+ylabel('PR5,W')
+%% rezultatu parbauder
+%vel vajadzetu atrast UR6 un UR7
+UR6 = Ik(3,:)*R6;
+UR7 = Ik(3,:)*R7;
+% pārbaudīsim KSpL III kontūram
+% UR5+UR6+UR7+E3=0
+% piešķirsim mainigajam Utst vienadojuma kreiso pusi
+Utst = UR5+UR6+UR7+E3t;
+figure
+plot(t,Utst)
