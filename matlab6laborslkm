@@ -1,0 +1,42 @@
+%% 6.laboratorijas darbs
+t = 0:0.1:4;
+N = length(t);
+xvid3a = 1/(N-1)*sum(sig(t(1:end-1)))
+xvid3b = 1/(N-1)*sum(sig(t(2:end-1)))
+h = (t(end)-t(1))/(N-1);
+xvid3c = 1/(N-1)*sum(sig(t(1:end-1)+h/2))
+%% vidējais vērtības atrašana integrāļa
+%%  atršanai izmantojot matlab iebūvēto
+% funkciju quad
+% quad(fun_handle,ta,tb,aprēķinu_kluda)
+xvidquad = 1/(t(end)-t(1))*quad(@sig,t(1),t(end),1e-3)
+%% efektiivas vertibas atrasana uz 3a formulas piemera
+t = 0:0.1:4;
+N = length(t);
+sigkv = @(t) (sig(t)).^2;
+xef3a = sqrt(1/(N-1)*sum(sigkv(t(1:end-1))))
+%% efektīvas vērtības atrašana ar quad
+xefquad = sqrt(1/(t(end)-t(1))*quad(sigkv,t(1),t(end),1e-3))
+%% rezultātuy noformēšana tabulas veidā
+% piemers ar 3a formulu
+dt = [0.5 0.01 0.05];
+fprintf('______________________________________\n')
+for dtc = dt
+    t = 0:dtc:4;
+    N = length(t);
+    xvid3a = 1/(N-1)*sum(sig(t(1:end-1)));
+    xef3a = sqrt(1/(N-1)*sum(sigkv(t(1:end-1))));
+fprintf('|dt=%0.2f | vv3a=%f |ef3a=%f|\n',dtc,xvid3a,xef3a);
+end
+fprintf('______________________________________\n')
+%% rezultatu noformeshana tabulas veidā
+% piemers ar integrali rekjinot ar quad
+tol = [1e-1 1e-2 1e-3];
+fprintf('______________________________________\n')
+for tolc = tol
+  xvidquad = 1/(t(end)-t(1))*quad(@sig,t(1),t(end),tolc);
+    xefquad = sqrt(1/(t(end)-t(1))*quad(sigkv,t(1),t(end),tolc));
+
+  fprintf('| tol=%0.3f | vvquad=%f |efquad=%f]\n',tolc,xvidquad,xefquad);
+end
+fprintf('______________________________________\n')
