@@ -1,0 +1,91 @@
+%% 6.laboratorijas darbs
+t = 0:0.1:4;
+N = length(t);
+xvid3a = 1/(N-1)*sum(sig(t(1:end-1)))
+xvid3b = 1/(N-1)*sum(sig(t(2:end-1)))
+h = (t(end)-t(1))/(N-1);
+xvid3c = 1/(N-1)*sum(sig(t(1:end-1)+h/2))
+%% vidējais vērtības atrašana integrāļa
+%%  atršanai izmantojot matlab iebūvēto
+% funkciju quad
+% quad(fun_handle,ta,tb,aprēķinu_kluda)
+xvidquad = 1/(t(end)-t(1))*quad(@sig,t(1),t(end),1e-3)
+%% efektiivas vertibas atrasana uz 3a formulas piemera
+t = 0:0.1:4;
+N = length(t);
+sigkv = @(t) (sig(t)).^2;
+xef3a = sqrt(1/(N-1)*sum(sigkv(t(1:end-1))))
+%% efektīvas vērtības atrašana ar quad
+xefquad = sqrt(1/(t(end)-t(1))*quad(sigkv,t(1),t(end),1e-3))
+%% rezultātuy noformēšana tabulas veidā
+% piemers ar 3a formulu
+dt = [0.5 0.01 0.05];
+fprintf('______________________________________\n')
+for dtc = dt
+    t = 0:dtc:4;
+    N = length(t);
+    xvid3a = 1/(N-1)*sum(sig(t(1:end-1)));
+    xef3a = sqrt(1/(N-1)*sum(sigkv(t(1:end-1))));
+fprintf('|dt=%0.2f | vv3a=%f |ef3a=%f|\n',dtc,xvid3a,xef3a);
+end
+fprintf('______________________________________\n')
+%% rezultatu noformeshana tabulas veidā
+% piemers ar integrali rekjinot ar quad
+tol = [1e-1 1e-2 1e-3];
+fprintf('______________________________________\n')
+for tolc = tol
+  xvidquad = 1/(t(end)-t(1))*quad(@sig,t(1),t(end),tolc);
+    xefquad = sqrt(1/(t(end)-t(1))*quad(sigkv,t(1),t(end),tolc));
+
+  fprintf('| tol=%0.3f | vvquad=%f |efquad=%f]\n',tolc,xvidquad,xefquad);
+end
+fprintf('______________________________________\n')
+% nāk reizē
+%īstās vid un ef evērtības satrašanu simulink
+
+%% īstās vidējās vērrtības atrašana
+syms t_sin
+A0=0; A=1.5; T=(3-2)/1.5; f = 1/T;
+delay = 2;
+y_sin=A0+A*sin(2*pi*f*(t_sin-delay));
+int_sin = int(y_sin,t_sin,2,3)
+k = (1.5-0)/(1-2); delay = 2;
+
+
+syms t_saw
+k = (1.5-0)/(1-2); delay = 2;
+y_saw = k*(t_saw-delay);
+int_saw = int(y_saw,t_saw,1,2)
+
+syms t_const
+y_const = 1.5+0*t_const;
+int_const = int(y_const,t_const,0,1)
+
+syms t_zero
+y_zero = 0+0*t_zero;
+int_zero = int(y_zero,t_zero,3,4)
+
+syms t_noise
+y_noise = 0*t_noise;
+int_noise = int(y_noise,t_noise,4,6)
+
+int_sum = int_noise+int_zero+int_const+int_sin+int_saw
+t = 0:0.01:6;
+vid_vert_patiesa = 1/(t(end)-t(1))*int_sum
+vid_vert_patiesa = double(vid_vert_patiesa)
+
+%% Aprēķināsim īsto efektīvo vērtību
+
+
+
+int_sin = int(y_sin^2,t_sin,2,3)
+int_saw = int(y_saw^2,t_saw,1,2)
+int_const = int(y_const^2,t_const,0,1)
+int_noise = int(y_noise^2,t_noise,4,6)
+int_zero = int(y_zero^2,t_zero,3,4)
+
+int_sum = int_noise+int_zero+int_const+int_sin+int_saw
+
+ef_vert_patiesa = sqrt(1/(t(end)-t(1))*int_sum)
+ef_vert_patiesa = double(ef_vert_patiesa)
+
