@@ -1,0 +1,46 @@
+%% 4.laboratorijas darbam
+%%Ar KSM atrisiniet doto vienadojumu Dots:
+t = 0:0.01:6.5;
+R1=1; R2=3; R3=1; R4=4; R5=5; R6=6; R7=7;
+E1=7*ones(size(t)) ; E2=sin(4*t); E3=lab3_demo_fun(t);
+% Spriegumu UR4-?
+% Jaudu PR4-?
+% Parbaudiit un atteelot Kirhofa sprieguma likumu 3. kontuuram
+G=[1/(R1+R3)+1/R2+1/R4 -1/R4 0;
+-1/R4 1/R4+1/R5+1/(R7+R8) -1/R5+1/(R7+R8);
+0 -1/R5+1/(R7+R8) 1/R5+1/(R7+R8)+1/R6];
+I=[E1/(R1+R3);E3/(R7+R8);E2/R6-E3/(R7+R8)];
+% risinaasim
+U = G\I
+
+% Atradisim IR6?
+IR6=UR6/R6;
+% Atradisim UR6-?
+UR6 = IR6*R6;
+% Atradisim jaudu PR6?
+PR6 =UR6.*IR6;
+%% Uzzimesim grafiku
+yyaxis left
+plot(t,UR6)
+xlabel('t,s'); ylabel('UR6.V')
+yyaxis right
+plot(t,PR6)
+ylabel('PR6,W')
+%% Rezultatu parbaude
+% vel vajadzetu atrast UR6 un UR7
+IR5=Ik(3,:)-Ik(2,:);
+IR7=Ik(3,:);
+IR8=Ik(3,:);
+UR5 = IR5*R5;
+UR7 = IR7*R7;
+UR8 = IR8*R8;
+% parbaudisim KSpL III konturam
+% UR5+UR8+UR7+E3=0
+% pieskirsim mainigajam Utst vienadojuma kreiso pusi
+Utst = UR5+UR8+UR7+E3;
+figure
+plot(t,Utst)
+%% Secinajumi
+% Saja darba es iemacijos atrast kontirstravas izmantojot matlab un
+% parbaudit vai rezultats bija pareizs vai ne izmatojot kspl. Un zimet
+% grafikus kuri attelo spriegumu.
