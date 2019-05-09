@@ -1,0 +1,18 @@
+%% ievads simboliskaja matematika 
+% merkis iepazitities ar matlaba simbolisko matematiku
+%% 1. uzdevums 
+syms x a b exp
+y = a+exp^(b*x^2-a*x)-100
+
+%syms a b
+atb = solve(x,y)
+%% 2. uzdevums
+% Atvasinajums 
+syms x
+
+y= diff(3*x^2*cos(x)-x^3*sin(x))
+x = sqrt(2):0.01:10;
+plot(x)
+%% Secinajumi
+% majas darbs pidisana, es iemacios, ka risinat atvasinajums un zimet, grafiki tiem 
+% ka ari pareizi atrisinat vinadojumu ar funkciju solve 
