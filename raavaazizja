@@ -1,0 +1,38 @@
+function y=lab3_demo_fun(t)
+if nargin == 0
+ t = 0:0.01:6.5;
+end
+%t_zero = 0:0.01:1;
+t_zerof= (t>=0)&(t<=1); t_zero=t(t_zerof);
+y_zero= 0*t_zero+0;
+%t_noise = 1:0.01:3;
+t_noisef = (t>1)&(t<=3); t_noise=t(t_noisef);
+y_noise = 2*rand(size(t_noise))-1;
+y_noise = 0*t_noise;
+% t_sin= 3:0.01:3.5;
+t_sinf= (t>3)&(t<3.5); t_sin=t(t_sinf);
+A0=0;
+A=2;
+T=(3.5-3)/2;
+f=1/T;
+delay=2;
+y_sin= A0+A*sin(2*pi*f*(t_sin-delay));
+%t_saw = 3.5:0.01:5.5;
+t_sawf = (t>=3.5)&(t<=5.5); t_saw=t(t_sawf);
+k=(-1-0)/(3.5-5.5);
+delay = 5.5;
+y_saw = k*(t_saw-delay);
+%%Konstanta sign#ls
+%t_const = 5.5:0.01:7.5;
+t_constf = (t>5.5)&(t<=7.5); t_const= t(t_constf);
+y_const = 2*t_const*0;
+y_const = 2+zeros(size(t_const));
+%%Sign#la apvienošana
+% t = [t_zero,t_noise,t_sin,t_saw,t_const];
+y = [y_zero,y_noise,y_sin,y_saw,y_const];
+t_const = 2*t_const*0;
+y_const = 2+zeros(size(t_const));
+if nargout == 0
+ plot (t,y)
+ y = [];
+end
