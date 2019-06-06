@@ -1,0 +1,100 @@
+% Videjas un efektivas vertibas noteikshana
+syms x
+k=-0.5;
+deltaT=6;
+% Videjas vertibas meklesana
+% izmantojot matlaba iebuveto skaitlisko integresanu
+k = (2-(-2))/(2.5-3.5);
+delay = 2+(2-0)/2;
+y_saw = k*(t_saw-delay)
+g1 = double(int(y_saw,x, 0, 0.5));
+
+g1 = double(int(k*(x-0),x, 0, 0.5));
+syms t_sin
+A0 = 0; A = 1; T = (2.5-0.5)/8; f =1/T;
+delay = 0.5;
+y_sin=A0-A*sin(2*pi*f*(t_sin-delay));
+g2 = double(int(y_sin,t_sin,0.5,2.5));
+%g2 = double(int(1*sin(2*pi*3.5*x-pi), x, 0.5, 2.5));
+g3 = double(int(0, x, 2.5, 4.5));
+g4 = double(int(zeros(size(x))-1.5, x, 4.5, 6));
+g5 = double(int(0*x, x, 6, 7.5));
+% 1.Patiesa efektiva vertiba
+vid = (g1+g2+g3+g4+g5)/7.5; %j#uzskata par pareizo
+disp('patiesa videja vertiiba'),vid,
+ef1 = double(int((k*(x-0))^2,x, 0, 0.5));
+ef2 = double(int((1*sin(2*pi*3.5*x-pi))^2, x, 0.5, 2.5));
+ef3 = double(int((0)^2, x, 2.5, 4.5));
+ef4 = double(int((-1)^2, x, 4.5, 6));
+ef5 = double(int(0*x^2,x,6,7.5));
+% Kas kapina to kvadrata (tas bus rokturis uz anonimo funkciju)
+ef = (sqrt((ef1+ef2+ef3+ef4+ef5)/7.5));
+disp('patiesa efektiva vertiiba'),ef,
+%xv3c=1/(N-1)*(sum(sig(t(1:end)+h/2)))
+sigkv = @(t) lab3_demo_fun(t).^2;
+dt = [0.1 0.01 0.001 0.0001];
+for dtc=dt
+ t=0:dtc:6.5;
+ h=dtc;
+ N = length(t);
+ xv3c=1/(N-1)*(sum(lab3_demo_fun(t(1:end-1)+h/2)));
+ xef3c=sqrt(1/(N-1)*(sum(sigkv(t(1:end-1)+h/2))));
+ fprintf('|dt=%0.4f\t|vv=%f\t||ef=%f\t|\n',dtc,xv3c,xef3c);
+end
+% quad funkcijai var noradit precizitati ar
+% kuru ta rekinas sintaksi
+tol = [1e-3 1e-4 1e-5 1e-6];
+for tolc = tol
+xvquad=1/(t(end)-t(1))*quad(@lab3_demo_fun,t(1),t(end),tolc);
+ fprintf('|tol=%0.7f\t|vv=%f\t||ef=%f\t|\n',tolc,xvquad,xef3c);
+end
+h = 0.01; %pie lielaaka solja abas vid veertiibas buus preciizakas
+t = 0:h:6.5;
+vid_t = (1/(length(t)-1)) * sum(lab3_demo_fun(t(1:end-1))); %skaitlisk# katru reizi dos cit#du rezult#tu jo ir troksnis
+ef_t = (1/(length(t)-1)) * sum(lab3_demo_fun(t(1:end-1)));
+plot(t,lab3_demo_fun(t),t,vid*ones(size(t)),'r--')
+grid on
+% 1. patiesa efektiva vertiiba
+ef = 0.3076
+function y=lab3_demo_fun(t)
+if nargin == 0
+ t = 0:0.01:6.5;
+end
+%t_zero = 0:0.01:1;
+t_zerof= (t>3.5)&(t<5.5); t_zero=t(t_zerof);
+y_zero=0*ones(size(t_zero));
+%t_noise = 1:0.01:3;
+t_noisef=(t>=1)&(t<2.5); t_noise=t(t_noisef);
+y_noise = 2*rand(size(t_noise))-1;
+y_noise = 0*t_noise;
+% t_sin= 3:0.01:3.5;
+t_sinf= (t>=0)&(t<1); t_sin=t(t_sinf);
+A0=0;
+A=2;
+T=(2-1)/5;
+f=1/T;
+delay=0;
+y_sin=A0-A*sin(2*pi*f*(t_sin-delay));
+%t_saw = 3.5:0.01:5.5;
+t_sawf = (t>=2.5)&(t<=3.5); t_saw=t(t_sawf);
+k = (2-(-2))/(2.5-3.5);
+delay = 2+(2-0)/2;
+y_saw = k*(t_saw-delay);
+%%Konstanta sign#ls
+%t_const = 5.5:0.01:7.5;
+t_constf = (t>=5.5)&(t<=6.5); t_const= t(t_constf);
+y_const = 2*t_const*0;
+y_const = 2+zeros(size(t_const));
+%%Sign#la apvienošana
+% t=[t_sin,t_noise,t_saw,t_zero,t_const];
+y=[y_sin,y_noise,y_saw,y_zero,y_const];
+t_const = 2*t_const*0;
+y_const = 2+zeros(size(t_const));
+if nargout == 0
+ plot (t,y)
+ y = [];
+end
+%plot(y)
+%% Secinajumi
+% Darbs tika veikts di
+end
