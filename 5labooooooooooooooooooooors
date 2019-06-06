@@ -1,0 +1,32 @@
+%%aim
+%ploting of non linear functions.
+function lab5
+global E i0 id Ud a R
+id = 0.675;
+Ud = 0.3;
+i0=1e-5 ; a=log(id/i0 + 1)/Ud; R=1;
+t = 0:0.01:6;
+Et = lab3_demo_fun(t);
+Ur=[];
+for E=Et
+Urt= newmet5;
+Ur= [Ur,Urt];
+end
+plot(t,Et,t,Ur)
+function fx= fund (UR)
+global E i0 a id Ud R
+fx = - 1/R- a*i0*exp(a*(E-UR));
+function fx= funx(UR)
+global i0 a E id Ud R ;
+fx=i0*(exp(a*(E-UR))-1)-UR/R;
+function x = newmet5
+epsilon =1e-3;
+x = 0;
+delta= funx(x)/fund(x);
+while abs(delta)>epsilon
+delta = funx(x)/fund(x);
+x=x - delta;
+end
+%%conclusion
+%Using the given equiation and %plot we found the value for 'a'. %And using this value added %nonlinear plot
+%in previous lab plot. %And today we lerned to %plot non linear functions
