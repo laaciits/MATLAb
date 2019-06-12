@@ -1,0 +1,117 @@
+% Videjas un efektivas vertibas noteikshana
+syms x
+k=-0.5;
+deltaT=6;
+% Videjas vertibas meklesana
+% izmantojot matlaba iebuveto skaitlisko integresanu
+syms t_sin
+A0=0; A=2; T=(2-1)/5; f=1/T;
+delay=0;
+y_sin=A0-A*sin(2*pi*f*(t_sin-delay));
+g1 = double(int(y_sin,t_sin,0,1));
+
+syms t_noise
+y_noise = 0*t_noise;
+g2 = double(int(y_noise,t_sin,1,2.5));
+
+syms t_saw
+delay = 2+(2-0)/2;
+y_saw = k*(t_saw-delay);
+g3 = double(int(y_saw,t_saw,2.5,3.5));
+
+syms t_zero
+y_zero=0*t_zero;
+g4 = double(int(y_zero,t_zero,3.5,5.5));
+
+syms t_const
+y_const=-2;
+g5 = double(int(y_const,t_const,5.5,6.5));
+% 1.Patiesa efektiva vertiba
+vid = (g1+g2+g3+g4+g5)/6.5; %j#uzskata par pareizo
+
+disp('patiesa videja vertiiba'),vid,
+
+
+% patiesa efektiivaa jauna
+% 1. patiesa efektiva vertiiba
+g1 = double(int(y_sin^2,t_sin,0,1));
+g2 = double(int(y_noise^2,t_sin,1,2.5));
+g3 = double(int(y_saw^2,t_saw,2.5,3.5));
+g4 = double(int(y_zero^2,t_zero,3.5,5.5));
+g5 = double(int(y_const^2,t_const,5.5,6.5));
+ef = (sqrt((g1+g2+g3+g4+g5)/6.5));
+disp('patiesa ef vertiiba'),ef,
+
+
+
+sigkv = @(t) lab3_demo_fun(t).^2;% sheit lab3_demo_fun tiek kaapinaats kv
+dt = [0.1 0.01 0.001 0.0001];
+for dtc=dt
+ t=0:dtc:6.5;
+ h=dtc;
+ N = length(t);
+ xv3c=1/(N-1)*(sum(lab3_demo_fun(t(1:end-1)+h/2)));
+ xef3c=sqrt(1/(N-1)*(sum(sigkv(t(1:end-1)+h/26))));
+ fprintf('|dt=%0.4f\t|vv=%f\t||ef=%f\t|\n',dtc,xv3c,xef3c);
+end
+% quad funkcijai var noradit precizitati ar
+% kuru ta rekinas sintaksi
+tol = [1e-3 1e-4 1e-5 1e-6];
+for tolc = tol
+xvquad=1/(t(end)-t(1))*quad(@lab3_demo_fun,t(1),t(end),tolc);
+xefquad=sqrt(1/(t(end)-t(1))*quad(sigkv,t(1),t(end),tolc));
+
+%xefquad
+ fprintf('|tol=%0.7f\t|vv=%f\t||ef=%f\t|\n',tolc,xvquad,xefquad);
+end
+h = 0.01; %pie lielaaka solja abas vid veertiibas buus preciizakas
+t = 0:h:6.5;
+vid_t = (1/(length(t)-1)) * sum(lab3_demo_fun(t(1:end-1))); %skaitlisk# katru reizi dos cit#du rezult#tu jo ir troksnis
+ef_t = (1/(length(t)-1)) * sum(lab3_demo_fun(t(1:end-1)));
+plot(t,lab3_demo_fun(t),t,vid*ones(size(t)),'r--')
+grid on
+
+
+function y=lab3_demo_fun(t)
+if nargin==0
+t=0:0.01:6.5;
+end
+%t_zero=0:0.01:1;
+t_zerof=(t>3.5)&(t<5.5); t_zero=t(t_zerof);
+%t_sin=1:0.01:2.5;
+t_sinf=(t>=0)&(t<1); t_sin=t(t_sinf);
+%t_noise=2.5:0.01:4.5;
+t_noisef=(t>=1)&(t<2.5); t_noise=t(t_noisef);
+%t_const=4.5:0.01:6.5;
+t_constf=(t>=5.5)&(t<=6.5); t_const=t(t_constf);
+%t_saw = 6.5:0.01:8;
+t_sawf=(t>=2.5)&(t<=3.5); t_saw=t(t_sawf);
+A0=0; A=2; T=(2-1)/5; f=1/T;
+delay=0;
+y_sin=A0-A*sin(2*pi*f*(t_sin-delay));
+%plot(t_sin,y_sin)
+%axis([0 8 -3 3]);
+% lai zim#tu citus grafikus
+%hold on
+%k = (yA-yB)/(tA-tB);
+k = (2-(-2))/(2.5-3.5);
+delay = 2+(2-0)/2; % vieta kur š##rso t
+y_saw = k*(t_saw-delay);
+%plot(t_saw,y_saw)
+%y_const=2.5; nepareizi
+y_const=-2*ones(size(t_const));
+%plot(t_const,y_const)
+y_zero=0*ones(size(t_zero));
+%plot(t_zero,y_zero)
+y_noise=2*rand(size(t_noise))-1;
+y_noise = 0*t_noise;
+%plot(t_noise,y_noise)
+t=[t_sin,t_noise,t_saw,t_zero,t_const];
+y=[y_sin,y_noise,y_saw,y_zero,y_const];
+if nargout == 0
+plot(t,y);y=[];
+end
+
+%% Secinajumi
+
+end
